@@ -46,7 +46,7 @@ def validate_license_number(license_number: str):
         raise ValidationError(
             "License number should consist only of 8 characters"
         )
-    elif not str_part.isupper() or not str_part.isupper():
+    elif not str_part.isupper() or not str_part.isalpha():
         raise ValidationError(
             "First 3 characters should be uppercase letters"
         )
