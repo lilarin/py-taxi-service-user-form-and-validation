@@ -1,12 +1,23 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from .forms import DriverCreationForm, DriverLicenseUpdateForm, CarCreationForm
-from .models import Driver, Car, Manufacturer
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseRedirect
+)
+from .forms import (
+    DriverCreationForm,
+    DriverLicenseUpdateForm,
+    CarCreationForm
+)
+from .models import (
+    Driver,
+    Car,
+    Manufacturer
+)
 
 
 @login_required
@@ -88,7 +99,7 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
 
 class DriverDetailView(LoginRequiredMixin, generic.DetailView):
     model = Driver
-    queryset = Driver.objects.all().prefetch_related("cars__manufacturer")
+    queryset = Driver.objects.prefetch_related("cars__manufacturer")
 
 
 class DriverCreateView(LoginRequiredMixin, generic.CreateView):
@@ -110,7 +121,7 @@ class DriverUpdateLicenseView(LoginRequiredMixin, generic.UpdateView):
 @login_required()
 def toggle_car_assign_view(request: HttpRequest, pk: int) -> HttpResponse:
     driver = Driver.objects.get(pk=request.user.id)
-    if Car.objects.get(pk=pk) in driver.cars.all():
+    if Car.objects.get_object_or_404(pk=pk) in driver.cars.all():
         driver.cars.remove(pk)
     else:
         driver.cars.add(pk)
